@@ -2,55 +2,9 @@ import create from "zustand";
 import { persist } from "zustand/middleware";
 import produce from "immer";
 
-export enum Currencies {
-  USD = "USD",
-  EUR = "EUR",
-  GBP = "GBP",
-}
+import { Currencies, Store, ExchangeDirection } from "./types";
 
-export enum ExchangeDirection {
-  Direct = "direct",
-  Reverse = "reverse",
-}
-
-interface Balance {
-  amount: number;
-  currency: Currencies;
-}
-
-interface FormState {
-  fromCurrency: Currencies;
-  toCurrency: Currencies;
-  fromAmount: number | "";
-  toAmount: number | "";
-  direction: ExchangeDirection;
-}
-
-interface Transaction {
-  fromCurrency: Currencies;
-  toCurrency: Currencies;
-  fromAmount: number | "";
-  toAmount: number | "";
-  direction: ExchangeDirection;
-  date: string;
-}
-
-export interface Store {
-  formState: FormState;
-  rates: Record<string, number>;
-  balance: Balance[];
-  setRates: (rates: Store["rates"]) => void;
-  set: (fn: (s: Store) => void) => void;
-  setBalance: (
-    fromAmount: number | "",
-    toAmount: number | "",
-    fromCurrency: Currencies,
-    toCurrency: Currencies,
-    direction: ExchangeDirection
-  ) => void;
-  transactions: Transaction[];
-}
-
+export const PERSIST_STORE_KEY = "currency-storage";
 export const INITIAL_BALANCE = [
   {
     currency: Currencies.EUR,
@@ -88,17 +42,6 @@ export const useStore = create<Store>(
             fromAmount: "",
             toAmount: "",
           },
-          transactions: [
-            ...state.transactions,
-            {
-              direction,
-              fromCurrency,
-              toCurrency,
-              fromAmount,
-              toAmount,
-              date: new Date().toISOString(),
-            },
-          ],
           balance: state.balance.map((balance) => {
             const isDirect = direction === ExchangeDirection.Direct;
 
@@ -124,7 +67,7 @@ export const useStore = create<Store>(
         })),
     }),
     {
-      name: "currency-storage",
+      name: PERSIST_STORE_KEY,
       version: 1,
     }
   )

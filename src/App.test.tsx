@@ -1,26 +1,24 @@
-import React from "react";
-import { render, screen, act } from "@testing-library/react";
+import { render, screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { rest } from "msw";
 import { setupServer } from "msw/node";
 
 import App from "./App";
-import { Currencies, Store } from "./store";
+import { Currencies, Store } from "./types";
 import { API_URL } from "./consts";
 import { RATES } from "./mockedApiResponse";
+import { PERSIST_STORE_KEY } from "./store";
 
-// Helper to get current state, because we are using LocalStorage
 const getCurrentState = (): Store =>
-  JSON.parse(localStorage.getItem("currency-storage") || "")?.state;
+  JSON.parse(localStorage.getItem(PERSIST_STORE_KEY) || "")?.state;
 
 const server = setupServer(
-  // Get exchange rates
   rest.get(API_URL, (req, res, ctx) => {
     return res(ctx.json(RATES));
   })
 );
 
-describe("Currency Exchange page", () => {
+describe("Currency exchange page", () => {
   beforeAll(() => {
     server.listen();
   });

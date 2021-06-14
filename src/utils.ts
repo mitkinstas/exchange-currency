@@ -1,4 +1,4 @@
-import { Currencies, Store } from "./store";
+import { Currencies, Store } from "./types";
 import { BASE_CURRENCY } from "./consts";
 
 export const getConvertRate = (
@@ -25,7 +25,7 @@ export const convertSum = (
   amount: number,
   from: Currencies,
   to: Currencies,
-  rates: Store["rates"]
+  rates?: Store["rates"]
 ) => {
   if (!from || !to || !amount || !rates) {
     return undefined;
